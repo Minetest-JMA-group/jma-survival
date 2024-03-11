@@ -1,0 +1,3 @@
+[submodule "DragonLand-private"]
+	path = DragonLand-private
+	url = git@github.com:markopetrovi/DragonLand-private
