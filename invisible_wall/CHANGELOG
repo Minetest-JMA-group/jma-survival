@@ -1,0 +1,15 @@
+Change log for Invisible Wall
+
+Version 0.1
+	Added the invisible node and a tool to dig it.
+
+Version 0.2
+	Fixed the translation
+
+Version 0.3 
+	Fixed a texture mistake
+
+Version 0.4
+	Removed unnecessary 'dye'-depend
+	Made the dependency on 'default' optional
+	Fixed light issue
