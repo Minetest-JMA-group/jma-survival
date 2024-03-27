@@ -576,6 +576,9 @@ minetest.register_lbm({
 	action = function(pos, node)
 		local meta = minetest.get_meta(pos)
 		local list = meta:get_inventory():get_list("main")
+		if not list then
+			return
+		end
 		if put_to_inputinv(pos, node, meta, list) then
 			return
 		end
