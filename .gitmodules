@@ -1,6 +1,6 @@
 [submodule "mods/private"]
 	path = mods/private
-	url = git@github.com:markopetrovi/jma-survival-private
+	url = git@github.com:Minetest-JMA-group/jma-survival-private
 [submodule "mods/shared_private"]
 	path = mods/shared_private
 	url = git@github.com:Minetest-JMA-group/jma-shared-private.git
