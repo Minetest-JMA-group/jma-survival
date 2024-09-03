@@ -7,3 +7,9 @@
 [submodule "mods/shared"]
 	path = mods/shared
 	url = https://github.com/Minetest-JMA-group/jma-shared.git
+[submodule "mods/noctf"]
+	path = mods/noctf
+	url = https://github.com/Minetest-JMA-group/jma-noctf
+[submodule "mods/jma_mtgame"]
+	path = mods/jma_mtgame
+	url = https://github.com/Minetest-JMA-group/jma-mtgame
