@@ -28,7 +28,6 @@ end
 
 function utility.place_holds(itemstack, placer, pointed_thing)
 	if itemstack == nil then return end
-	if placer == nil then return end
 	local itemdef = itemstack:get_definition()
 	if itemdef == nil
 			or itemdef.groups == nil

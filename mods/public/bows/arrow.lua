@@ -5,11 +5,11 @@ local on_hit_remove = function(self)
 		bows.registered_arrows[self.name].on_hit_sound, {
 			pos = self.object:get_pos(),
 			gain = 1.0,
-			max_hear_distance = 7
+			max_hear_distance = 12
 		}, true)
 
 	-- chance of dropping arrow
-	local chance = minetest.registered_items[self.name].drop_chance
+	local chance = minetest.registered_items[self.name].drop_chance or 10
 	local pos = self.object:get_pos()
 
 	if pos and math.random(chance) == 1 then

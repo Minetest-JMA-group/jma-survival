@@ -1,154 +1,91 @@
 -- rnd: code borrowed from machines, mark.lua
+-- Copyright (C) 2022-2024 мтест
+-- See README.md for license details
 
--- need for marking
-machines = {}; 
+-- Needed for marking
+local machines_marks = {"1", "11", "2", "N", "S"}
 
-machines.pos1 = {};machines.pos11 = {}; machines.pos2 = {}; 
-machines.marker1 = {}
-machines.marker11 = {}
-machines.marker2 = {}
-machines.marker_region = {}
-
-
---marks machines region position 1
-machines.mark_pos1 = function(name)
-	local pos1, pos2 = machines.pos1[name], machines.pos2[name]
-
-	if pos1 ~= nil then
-		--make area stay loaded
-		local manip = minetest.get_voxel_manip()
-		manip:read_from_map(pos1, pos1)
-	end
-	
-	if not machines[name] then machines[name]={} end
-	machines[name].timer = 10;
-	if machines.marker1[name] ~= nil then --marker already exists
-		machines.marker1[name]:remove() --remove marker
-		machines.marker1[name] = nil
-	end
-	if pos1 ~= nil then
-		--add marker
-		machines.marker1[name] = minetest.add_entity(pos1, "machines:pos1")
-		if machines.marker1[name] ~= nil then
-			machines.marker1[name]:get_luaentity().name = name
+machines = {
+	remove_markers = function(name, marks)
+		marks = marks or machines_marks
+		for _, n in ipairs(marks) do
+			local markern = "marker" .. n
+			if machines[markern][name] then
+				machines[markern][name]:remove() -- remove marker
+			end
 		end
 	end
+}
+
+for _, n in ipairs(machines_marks) do
+	local markern = "marker" .. n
+	local posn = "machines:pos" .. n
+	local texturen, delay
+
+	if n == "N" then -- mover "Now" button marker
+		texturen = "machines_pos.png^[colorize:#ffd700"
+		delay = 27
+	elseif n == "S" then -- mover "Show" button marker
+		texturen = "machines_pos.png^[colorize:#008080"
+		delay = 21
+	else -- source1, source2 and target markers
+		texturen = "machines_pos" .. n .. ".png"
+		delay = 9
+	end
+
+	machines[markern] = {}
+
+	machines["mark_pos" .. n] = function(name, pos, node_is_punchable)
+		if machines[markern][name] then -- marker already exists
+			machines[markern][name]:remove() -- remove marker
+		end
+
+		-- add marker
+		local obj = minetest.add_entity(pos, posn)
+		if obj then
+			obj:get_luaentity()._name = name
+			if node_is_punchable then
+				obj:set_properties({pointable = false})
+			else
+				local node_name = minetest.get_node(obj:get_pos()).name
+				if (node_name):sub(1, 15) == "basic_machines:" then
+					obj:set_properties({pointable = false})
+				end
+			end
+			machines[markern][name] = obj
+		end
+
+		return obj
+	end
+
+	minetest.register_entity(":" .. posn, {
+		initial_properties = {
+			collisionbox = {-0.55, -0.55, -0.55, 0.55, 0.55, 0.55},
+			visual = "cube",
+			visual_size = {x = 1.1, y = 1.1},
+			textures = {texturen, texturen, texturen,
+				texturen, texturen, texturen},
+			glow = 11,
+			static_save = false,
+			shaded = false
+		},
+		on_deactivate = function(self)
+			machines[markern][self._name] = nil
+		end,
+		on_step = function(self, dtime)
+			self._timer = self._timer + dtime
+			if self._timer > delay then
+				self.object:remove()
+			end
+		end,
+		on_punch = function(self)
+			minetest.after(0.1, function()
+				if self and self.object then
+					self.object:remove()
+				end
+			end)
+		end,
+		_name = "",
+		_timer = 0
+	})
 end
-
---marks machines region position 1
-machines.mark_pos11 = function(name)
-	local pos11 = machines.pos11[name];
-
-	if pos11 ~= nil then
-		--make area stay loaded
-		local manip = minetest.get_voxel_manip()
-		manip:read_from_map(pos11, pos11)
-	end
-	
-	if not machines[name] then machines[name]={} end
-	machines[name].timer = 10;
-	if machines.marker11[name] ~= nil then --marker already exists
-		machines.marker11[name]:remove() --remove marker
-		machines.marker11[name] = nil
-	end
-	if pos11 ~= nil then
-		--add marker
-		machines.marker11[name] = minetest.add_entity(pos11, "machines:pos11")
-		if machines.marker11[name] ~= nil then
-			machines.marker11[name]:get_luaentity().name = name
-		end
-	end
-end
-
---marks machines region position 2
-machines.mark_pos2 = function(name)
-	local pos1, pos2 = machines.pos1[name], machines.pos2[name]
-
-	if pos2 ~= nil then
-		--make area stay loaded
-		local manip = minetest.get_voxel_manip()
-		manip:read_from_map(pos2, pos2)
-	end
-	
-	if not machines[name] then machines[name]={} end
-	machines[name].timer = 10;
-	if machines.marker2[name] ~= nil then --marker already exists
-		machines.marker2[name]:remove() --remove marker
-		machines.marker2[name] = nil
-	end
-	if pos2 ~= nil then
-		--add marker
-		machines.marker2[name] = minetest.add_entity(pos2, "machines:pos2")
-		if machines.marker2[name] ~= nil then
-			machines.marker2[name]:get_luaentity().name = name
-		end
-	end
-end
-
-
-
-minetest.register_entity(":machines:pos1", {
-	initial_properties = {
-		visual = "cube",
-		visual_size = {x=1.1, y=1.1},
-		textures = {"machines_pos1.png", "machines_pos1.png",
-			"machines_pos1.png", "machines_pos1.png",
-			"machines_pos1.png", "machines_pos1.png"},
-		collisionbox = {-0.55, -0.55, -0.55, 0.55, 0.55, 0.55},
-		physical = false,
-	},
-	on_step = function(self, dtime)
-		if not machines[self.name] then machines[self.name]={}; machines[self.name].timer = 10 end
-		machines[self.name].timer = machines[self.name].timer - dtime
-		if machines[self.name].timer<=0 or machines.marker1[self.name] == nil then
-			self.object:remove()
-		end
-	end,
-	on_punch = function(self, hitter)
-		self.object:remove()
-		machines.marker1[self.name] = nil
-		machines[self.name].timer = 10
-	end,
-})
-
-minetest.register_entity(":machines:pos11", {
-	initial_properties = {
-		visual = "cube",
-		visual_size = {x=1.1, y=1.1},
-		textures = {"machines_pos11.png", "machines_pos11.png",
-			"machines_pos11.png", "machines_pos11.png",
-			"machines_pos11.png", "machines_pos11.png"},
-		collisionbox = {-0.55, -0.55, -0.55, 0.55, 0.55, 0.55},
-		physical = false,
-	},
-	on_step = function(self, dtime)
-		if not machines[self.name] then machines[self.name]={}; machines[self.name].timer = 10 end
-		machines[self.name].timer = machines[self.name].timer - dtime
-		if machines[self.name].timer<=0 or machines.marker11[self.name] == nil then
-			self.object:remove()
-		end
-	end,
-	on_punch = function(self, hitter)
-		self.object:remove()
-		machines.marker11[self.name] = nil
-		machines[self.name].timer = 10
-	end,
-})
-
-minetest.register_entity(":machines:pos2", {
-	initial_properties = {
-		visual = "cube",
-		visual_size = {x=1.1, y=1.1},
-		textures = {"machines_pos2.png", "machines_pos2.png",
-			"machines_pos2.png", "machines_pos2.png",
-			"machines_pos2.png", "machines_pos2.png"},
-		collisionbox = {-0.55, -0.55, -0.55, 0.55, 0.55, 0.55},
-		physical = false,
-	},
-	on_step = function(self, dtime)
-		if not machines[self.name] then machines[self.name]={}; machines[self.name].timer = 10 end
-		if machines[self.name].timer<=0 or machines.marker2[self.name] == nil then
-			self.object:remove()
-		end
-	end,
-})

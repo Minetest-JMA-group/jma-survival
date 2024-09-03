@@ -804,7 +804,7 @@ end
 ----------------------------------------------------------------------
 -- Crafting
 
---if enable_tnt and tnt_modpath then
+if enable_tnt and tnt_modpath then
 	minetest.register_craft({
 		output = "torch_bomb:torch_grenade",
 		recipe = {
@@ -863,4 +863,4 @@ end
 			recipe = {"torch_bomb:mega_torch_bomb", "tnt:tnt"},
 		})	
 	end
---end
+end

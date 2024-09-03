@@ -88,6 +88,7 @@ bows.register_arrow("arrow",{
 	craft = {
 		{"default:flint", "group:stick", feather}
 	},
+	on_hit_sound = "bows_arrow_hit",
 --[[
 	on_hit_node = function(self, pos, user, arrow_pos)
 
@@ -120,6 +121,7 @@ bows.register_arrow("arrow_steel",{
 	craft = {
 		{"default:steel_ingot", "group:stick", feather}
 	},
+	on_hit_sound = "bows_arrow_hit",
 --[[
 	on_hit_object = function(self, target, hp, user, lastpos)
 		if target
@@ -143,6 +145,7 @@ bows.register_arrow("arrow_mese",{
 	craft = {
 		{"default:mese_crystal", "group:stick", feather}
 	},
+	on_hit_sound = "bows_arrow_hit",
 	on_hit_node = function(self, pos, user, arrow_pos)
 
 		if self.node.name == "mesecons_switch:mesecon_switch_on"
@@ -168,6 +171,7 @@ bows.register_arrow("arrow_diamond",{
 	craft = {
 		{"default:diamond", "group:stick", feather}
 	},
+	on_hit_sound = "bows_arrow_hit",
 	on_hit_node = function(self, pos, user, arrow_pos)
 		if self.node.name == "default:glass"
 		and not minetest.is_protected(pos, user:get_player_name()) then

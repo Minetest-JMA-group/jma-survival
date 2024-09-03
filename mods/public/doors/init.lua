@@ -6,20 +6,7 @@ doors = {
 	registered_trapdoors = {}
 }
 
-
--- translation support
-local S
-if minetest.get_translator then
-	S = minetest.get_translator("doors") -- 5.x translation function
-else
-	S = function(str, ...) -- boilerplate function
-		local args = {...}
-		return str:gsub("@%d+", function(match)
-			return args[tonumber(match:sub(2))]
-		end)
-	end
-end
-
+local S = minetest.get_translator("doors") -- translation support
 
 local function replace_old_owner_information(pos)
 
@@ -156,26 +143,39 @@ local can_toggle = function(clicker, pos)
 		return true
 	end
 
-	if can_dig_door(pos, clicker) then
-		return true
-	end
+	if not clicker then return end
 
 	local meta = minetest.get_meta(pos)
 	local owner = meta:get_string("owner")
 	local prot  = meta:get_string("doors_protected")
+	local pname = clicker:get_player_name()
 
+	-- is door open for all
 	if owner == "" and prot == "" then
 		return true
 	end
 
+	-- do we own door
+	if owner == pname then
+		return true
+	end
+
+	-- check if door protected and we have permission
+	if prot ~= "" and not minetest.is_protected(pos, pname) then
+		return true
+	end
+
+	-- get what's in our hand
 	local item = clicker and clicker:get_wielded_item()
 
+	-- do we have a key
 	if not item or minetest.get_item_group(item:get_name(), "key") ~= 1 then
 		return false
 	end
 
 	local key_meta = item:get_meta()
 
+	-- does key have a secret code
 	if key_meta:get_string("secret") == "" then
 
 		local key_oldmeta = item:get_metadata()
@@ -185,9 +185,11 @@ local can_toggle = function(clicker, pos)
 		end
 
 		key_meta:set_string("secret", minetest.parse_json(key_oldmeta).secret)
+
 		item:set_metadata("")
 	end
 
+	-- does secret code match our key code
 	if meta:get_string("key_lock_secret") == key_meta:get_string("secret") then
 		return true
 	end
