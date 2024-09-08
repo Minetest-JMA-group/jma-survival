@@ -1,4 +1,7 @@
 minetest.register_globalstep(function(dtime, player)
+	if not scope_hud then
+		return
+	end
 	for _, player in pairs(minetest.get_connected_players()) do
 		local w_item = player:get_wielded_item()
 		local controls = player:get_player_control()
