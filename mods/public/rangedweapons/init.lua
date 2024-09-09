@@ -1050,8 +1050,10 @@ minetest.register_globalstep(
         timer = timer + dtime
         if timer >= 1.0 then
             for _, player in pairs(minetest.get_connected_players()) do
-                player:hud_change(hit, "text", "rangedweapons_empty_icon.png")
-                timer = 0
+		if hit then
+	           player:hud_change(hit, "text", "rangedweapons_empty_icon.png")
+	           timer = 0
+		end
             end
         end
     end
