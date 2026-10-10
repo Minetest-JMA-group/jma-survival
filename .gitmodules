@@ -7,9 +7,12 @@
 [submodule "mods/shared"]
 	path = mods/shared
 	url = https://codeberg.org/Luanti-JMA-group/jma-shared
+	ignore = all
 [submodule "mods/noctf"]
 	path = mods/noctf
 	url = https://codeberg.org/Luanti-JMA-group/jma-noctf
+	ignore = all
 [submodule "mods/jma_mtgame"]
 	path = mods/jma_mtgame
 	url = https://codeberg.org/Luanti-JMA-group/jma-mtgame
+	ignore = all
